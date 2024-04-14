@@ -1,9 +1,16 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+
+const formSchema = z.object({
+  body: z.string().min(1).max(50),
+});
 
 export const createPost = async (body: string) => {
   const supabase = createClient();
+
+  const res = formSchema.parse({ body });
 
   const {
     data: { user },

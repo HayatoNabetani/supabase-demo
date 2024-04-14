@@ -15,14 +15,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { Tables } from "@/types/database";
 import { useToast } from "@/components/ui/use-toast";
 
+const MAX_LENGTH = 50;
 const formSchema = z.object({
-  body: z.string().min(1).max(50),
+  body: z
+    .string()
+    .min(1, "必須入力です。")
+    .max(MAX_LENGTH, `最大${MAX_LENGTH}文字です。`),
 });
 
 const FormComponent = ({
@@ -32,6 +35,7 @@ const FormComponent = ({
 }) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
+    mode: "onChange",
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues || {
       body: "",
@@ -43,21 +47,37 @@ const FormComponent = ({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values.body);
     if (defaultValues) {
-      return updatePost(defaultValues.id, values.body).then(() => {
-        router.refresh();
-        toast({
-          title: "更新成功！",
-          description: "Friday, February 10, 2023 at 5:57 PM",
+      return updatePost(defaultValues.id, values.body)
+        .then(() => {
+          router.refresh();
+          toast({
+            title: "更新成功！",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+          });
+        })
+        .catch(() => {
+          toast({
+            title: "更新失敗！",
+            variant: "destructive",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+          });
         });
-      });
     } else {
-      return createPost(values.body).then(() => {
-        router.refresh();
-        toast({
-          title: "作成成功！",
-          description: "Friday, February 10, 2023 at 5:57 PM",
+      return createPost(values.body)
+        .then(() => {
+          router.refresh();
+          toast({
+            title: "作成成功！",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+          });
+        })
+        .catch(() => {
+          toast({
+            title: "作成失敗！",
+            variant: "destructive",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+          });
         });
-      });
     }
   }
 
@@ -77,7 +97,10 @@ const FormComponent = ({
             </FormItem>
           )}
         />
-        <Button disabled={form.formState.isSubmitting} type="submit">
+        <Button
+          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          type="submit"
+        >
           送信
         </Button>
       </form>

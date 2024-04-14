@@ -6,11 +6,11 @@ const SearchForm = () => {
       action={async (data: FormData) => {
         "use server";
         const keyword = data.get("keyword");
-        redirect(`/?=keyword=${keyword}`);
+        redirect(`/?keyword=${keyword}`);
       }}
     >
       <input type="text" name="keyword" />
-      <button>aaaaaaaaa</button>
+      <button>検索</button>
     </form>
   );
 };
