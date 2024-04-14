@@ -2,9 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export const createPost = async (fromData: FormData) => {
-  const body = fromData.get("body") as string;
-
+export const createPost = async (body: string) => {
   const supabase = createClient();
 
   const {
@@ -25,10 +23,7 @@ export const createPost = async (fromData: FormData) => {
   });
 };
 
-export const updatePost = async (data: FormData) => {
-  const id = data.get("id") as string;
-  const body = data.get("body") as string;
-
+export const updatePost = async (id: number, body: string) => {
   const supabase = createClient();
 
   const {
